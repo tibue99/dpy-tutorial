@@ -1,5 +1,6 @@
+from datetime import datetime, time, timezone
+
 from discord.ext import commands, tasks
-from datetime import time, timezone, datetime
 
 
 class Task(commands.Cog):

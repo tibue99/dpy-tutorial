@@ -1,6 +1,6 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 
 class Bot(commands.Bot):
@@ -21,9 +21,9 @@ bot = Bot()
 @bot.tree.command(name="uerinfo", description="Zeige Infos über einen User")
 @app_commands.describe(alter="Das Alter", user="Gib einen User an")
 async def info(
-        ctx,
-        alter: app_commands.Range[int, 1, 99],
-        user: discord.Member = None,
+    ctx,
+    alter: app_commands.Range[int, 1, 99],
+    user: discord.Member = None,
 ):
     if user is None:
         user = ctx.user

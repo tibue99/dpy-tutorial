@@ -2,11 +2,12 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-
 options = [
     discord.SelectOption(label="Python", description="Python Beschreibung", emoji="👑"),
     discord.SelectOption(label="Java", description="Java Beschreibung", emoji="💻"),
-    discord.SelectOption(label="Javascript", description="Javascript Beschreibung", emoji="🚩", value="JS")
+    discord.SelectOption(
+        label="Javascript", description="Javascript Beschreibung", emoji="🚩", value="JS"
+    ),
 ]
 
 keks = discord.SelectOption(label="Keks", emoji="🍪")

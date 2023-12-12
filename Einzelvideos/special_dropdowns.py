@@ -1,7 +1,7 @@
 import discord
-from discord.ext import commands
-from discord.ui import UserSelect, RoleSelect, ChannelSelect
 from discord import app_commands
+from discord.ext import commands
+from discord.ui import ChannelSelect, RoleSelect, UserSelect
 
 
 class Base(commands.Cog):
@@ -24,7 +24,9 @@ class Dropdown(discord.ui.View):
         role_list = ", ".join(mentions)
         await interaction.response.send_message(f"Du hast folgende Rollen ausgewählt: {role_list}")
 
-    @discord.ui.select(cls=ChannelSelect, placeholder="Wähle einen Channel", min_values=1, max_values=1)
+    @discord.ui.select(
+        cls=ChannelSelect, placeholder="Wähle einen Channel", min_values=1, max_values=1
+    )
     async def channel_callback(self, interaction, select):
         await interaction.response.send_message(f"Du hast {select.values[0].mention} gewählt.")
 

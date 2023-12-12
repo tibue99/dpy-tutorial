@@ -19,10 +19,14 @@ class Base(commands.Cog):
     @commands.Cog.listener()
     async def on_app_command_error(self, ctx, error):
         if isinstance(error, app_commands.CheckFailure):
-            await ctx.response.send_message(f"Du bist nicht würdig genug, um diesem Befehl zu nutzen!", ephemeral=True)
+            await ctx.response.send_message(
+                f"Du bist nicht würdig genug, um diesem Befehl zu nutzen!", ephemeral=True
+            )
             return
 
-        await ctx.response.send_message(f"Es ist ein Fehler aufgetreten: ```{error}```", ephemeral=True)
+        await ctx.response.send_message(
+            f"Es ist ein Fehler aufgetreten: ```{error}```", ephemeral=True
+        )
         raise error
 
 

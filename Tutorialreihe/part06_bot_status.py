@@ -22,15 +22,13 @@ class Commands(commands.Cog):
         self.bot = bot
 
     @app_commands.command()
-    @app_commands.choices(typ=[
-        app_commands.Choice(name="game", value="game"),
-        app_commands.Choice(name="stream", value="stream")
-    ])
-    async def activity(
-        self, interaction,
-        typ: app_commands.Choice[str],
-        name: str
-    ):
+    @app_commands.choices(
+        typ=[
+            app_commands.Choice(name="game", value="game"),
+            app_commands.Choice(name="stream", value="stream"),
+        ]
+    )
+    async def activity(self, interaction, typ: app_commands.Choice[str], name: str):
         if typ.value == "game":
             act = discord.Game(name=name)
         else:

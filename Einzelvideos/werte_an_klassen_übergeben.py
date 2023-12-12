@@ -1,6 +1,6 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 
 class Button(commands.Cog):
@@ -24,12 +24,18 @@ class TutorialView(discord.ui.View):
     @discord.ui.button(label="Keks", style=discord.ButtonStyle.primary, emoji="🍪", custom_id="keks")
     async def button_callback1(self, interaction, button):
         if self.user.id != interaction.user.id:
-            await interaction.response.send_message("Du darfst diesen Button nicht benutzen!", ephemeral=True)
+            await interaction.response.send_message(
+                "Du darfst diesen Button nicht benutzen!", ephemeral=True
+            )
             return
 
-        await interaction.response.send_message(f"{interaction.client.user.name} mag Kekse", ephemeral=True)
+        await interaction.response.send_message(
+            f"{interaction.client.user.name} mag Kekse", ephemeral=True
+        )
 
-    @discord.ui.button(label="Pizza", style=discord.ButtonStyle.primary, emoji="🍕", custom_id="pizza")
+    @discord.ui.button(
+        label="Pizza", style=discord.ButtonStyle.primary, emoji="🍕", custom_id="pizza"
+    )
     async def button_callback2(self, interaction, button):
         button.disabled = True
         await interaction.response.edit_message(view=self)

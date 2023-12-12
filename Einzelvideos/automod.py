@@ -1,9 +1,8 @@
+from datetime import timedelta
+
 import discord
 from discord import app_commands
 from discord.ext import commands
-
-from datetime import timedelta
-
 
 invite_links = ["*.gg/*", "*discord.com/invite*", "*discord.gg*"]
 

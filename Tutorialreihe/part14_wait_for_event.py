@@ -9,10 +9,10 @@
 #     debug_guilds=[123456789],  # hier server id einfügen
 # )
 
-from discord.ext import commands
-from discord import app_commands
-
 import asyncio
+
+from discord import app_commands
+from discord.ext import commands
 
 
 class Base(commands.Cog):

@@ -1,14 +1,14 @@
 import discord
-from discord.ext import commands
 from discord.app_commands import ContextMenu
+from discord.ext import commands
 
 
 class Context(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        self.bot.tree.add_command(ContextMenu(name='Zeige die ID', callback=self.get_id))
-        self.bot.tree.add_command(ContextMenu(name='Stups', callback=self.stups))
+        self.bot.tree.add_command(ContextMenu(name="Zeige die ID", callback=self.get_id))
+        self.bot.tree.add_command(ContextMenu(name="Stups", callback=self.stups))
 
     async def get_id(self, ctx, message: discord.Message):
         await ctx.response.send_message(f"Hier ist die Message ID: {message.id}")

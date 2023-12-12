@@ -1,6 +1,6 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 
 class Radio(commands.Cog):
@@ -13,12 +13,16 @@ class Radio(commands.Cog):
             return await ctx.response.send_message("Du musst erst einem Voice Channel beitreten.")
 
         if not ctx.user.voice.channel.permissions_for(ctx.guild.me).connect:
-            return await ctx.response.send_message("Ich habe keine Rechte, um deinem Channel beizutreten.")
+            return await ctx.response.send_message(
+                "Ich habe keine Rechte, um deinem Channel beizutreten."
+            )
 
         if ctx.guild.voice_client is None:
-            await ctx.user.voice.channel.connect()  # Bot ist in keinem Voice Channel
+            # Bot ist in keinem Voice Channel
+            await ctx.user.voice.channel.connect()
         else:
-            await ctx.guild.voice_client.move_to(ctx.user.voice.channel)  # Bot ist schon in einem anderen Voice Channel
+            # Bot ist schon in einem anderen Voice Channel
+            await ctx.guild.voice_client.move_to(ctx.user.voice.channel)
 
         if ctx.guild.voice_client.is_playing():
             ctx.guild.voice_client.stop()

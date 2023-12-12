@@ -1,6 +1,6 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 
 class Base(commands.Cog):
@@ -13,9 +13,7 @@ class Base(commands.Cog):
         color = int(hex_string, 16)
 
         embed = discord.Embed(
-            description="Dies ist ein sehr cooler Text"
-                        "\n\n🔹 Kekse sind lecker",
-            color=color
+            description="Dies ist ein sehr cooler Text" "\n\n🔹 Kekse sind lecker", color=color
         )
         embed.set_thumbnail(url=ctx.user.display_avatar)
         await ctx.response.send_message(embed=embed)

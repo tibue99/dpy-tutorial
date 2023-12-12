@@ -25,4 +25,4 @@ async def on_message_delete(msg):
     await msg.channel.send(f"Eine Nachricht von {msg.author} wurde gelöscht: {msg.content}")
 
 
-bot.run("")   # hier token einfügen
+bot.run("")  # hier token einfügen

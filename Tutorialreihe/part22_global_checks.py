@@ -11,7 +11,8 @@ class Base(commands.Cog):
     async def bot_check(self, interaction):
         if interaction.user.id != 123456789:  # hier user ID einfügen
             await interaction.response.send_message(
-                "Du bist nicht würdig genug, um diesen Befehl zu nutzen!")
+                "Du bist nicht würdig genug, um diesen Befehl zu nutzen!"
+            )
             return False
         return True
 
