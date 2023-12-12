@@ -3,23 +3,24 @@
 # intents = discord.Intents.default()
 # intents.members = True
 #
-# bot = discord.Bot(
+# bot = commands.Bot(
+#     command_prefix="!",
 #     intents=intents,
 #     debug_guilds=[123456789],  # hier server id einfügen
 # )
 
 import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command
 
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
-    async def greet(self, ctx):
-        await ctx.respond(f"Hey {ctx.author.mention}")
+    @app_commands.command()
+    async def greet(self, interaction):
+        await interaction.response.send_message(f"Hey {interaction.user.mention}")
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -33,5 +34,5 @@ class Base(commands.Cog):
         await channel.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

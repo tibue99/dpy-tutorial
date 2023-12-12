@@ -1,18 +1,21 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command, option
+from discord.app_commands import Choice
 
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
-    @option("user", description="Wähle einen User")
-    @option("auswahl", description="Beschreibung", choices=["Ja", "Nein"])
+    @app_commands.command()
+    @app_commands.describe(user="Wähle einen User", auswahl="Beschreibung")
+    @app_commands.choices(
+        auswahl=[Choice(name="Ja", value="Ja"), Choice(name="Nein", value="Nein")]
+    )
     async def hello(self, ctx, user: discord.User, auswahl: str = "Ja"):
         await ctx.respond(f"{auswahl}, {user.mention}")
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

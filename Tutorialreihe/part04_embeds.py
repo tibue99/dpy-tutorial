@@ -1,27 +1,32 @@
 import discord
-from discord.commands import Option
-
-intents = discord.Intents.default()
-
-bot = discord.Bot(
-    intents=intents,
-    debug_guilds=[123456789]  # hier server id einfügen
-)
+from discord.ext import commands
+from discord import app_commands
 
 
-@bot.event
-async def on_ready():
-    print(f"{bot.user} ist online")
+class Bot(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.all()
+        super().__init__(command_prefix="!", intents=intents)
+
+    async def on_ready(self):
+        print(f"{self.user} ist online")
+
+    async def setup_hook(self):
+        await self.tree.sync()
 
 
-@bot.slash_command(name="userinfo", description="Zeige Infos über einen User")
+bot = Bot()
+
+
+@bot.tree.command(name="uerinfo", description="Zeige Infos über einen User")
+@app_commands.describe(alter="Das Alter", user="Gib einen User an")
 async def info(
         ctx,
-        alter: Option(int, "Das Alter", min_value=1, max_value=99),
-        user: Option(discord.Member, "Gib einen User an", default=None),
+        alter: app_commands.Range[int, 1, 99],
+        user: discord.Member = None,
 ):
     if user is None:
-        user = ctx.author
+        user = ctx.user
 
     embed = discord.Embed(
         title=f"Infos über {user.name}",
@@ -35,10 +40,10 @@ async def info(
     embed.add_field(name="ID", value=user.id)
     embed.add_field(name="Alter", value=alter)
 
-    embed.set_thumbnail(url=ctx.author.display_avatar.url)
+    embed.set_thumbnail(url=ctx.user.display_avatar.url)
     embed.set_footer(text="Das ist ein Footer")
 
-    await ctx.respond(embed=embed)
+    await ctx.response.send_message(embed=embed)
 
 
 bot.run("")  # hier bot token einfügen

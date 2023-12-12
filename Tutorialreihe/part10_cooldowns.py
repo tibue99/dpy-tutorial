@@ -1,34 +1,23 @@
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command
+from discord.app_commands import checks
 
 
 class Cooldown(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        bot.tree.on_error = self.on_app_command_error
 
-    @slash_command()
-    @commands.cooldown(1, 60, commands.BucketType.user)
-    async def hey(self, ctx):
-        await ctx.respond("Hey")
-
-    @staticmethod
-    def convert_time(seconds: int) -> str:
-        if seconds < 60:
-            return f"{round(seconds)} Sekunden"
-        minutes = seconds / 60
-        if minutes < 60:
-            return f"{round(minutes)} Minuten"
-        hours = minutes / 60
-        return f"{round(hours)} Stunden"
+    @app_commands.command()
+    @checks.cooldown(1, 10, key=lambda i: (i.guild_id, i.user.id))
+    async def hey(self, interaction):
+        await interaction.response.send_message("Hey")
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx, error):
-        if isinstance(error, commands.CommandOnCooldown):
-            seconds = ctx.command.get_cooldown_retry_after(ctx)
-            final_time = self.convert_time(seconds)
-
-            await ctx.respond(f"Du musst noch {final_time} warten.", ephemeral=True)
+    async def on_app_command_error(self, ctx, error):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await ctx.response.send_message(f"Du musst noch warten.", ephemeral=True)
 
 
-def setup(bot):
-    bot.add_cog(Cooldown(bot))
+async def setup(bot):
+    await bot.add_cog(Cooldown(bot))

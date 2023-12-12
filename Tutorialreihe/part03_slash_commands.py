@@ -1,32 +1,37 @@
 import discord
-from discord.commands import Option
+from discord.ext import commands
+from discord import app_commands
 
-intents = discord.Intents.default()
 
-bot = discord.Bot(
-    intents=intents,
-    debug_guilds=[123456789]  # hier server id einfügen
+class Bot(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        super().__init__(command_prefix="!", intents=intents)
+
+    async def on_ready(self):
+        print(f"{self.user} ist online")
+
+    async def setup_hook(self):
+        await self.tree.sync()
+
+
+bot = Bot()
+
+
+@bot.tree.command(description="Grüße einen User")
+@app_commands.describe(user="Grüße einen User")
+async def greet(ctx, user: discord.User):
+    await ctx.response.send_message(f"Hallo {user.mention}")
+
+
+@bot.tree.command(description="Lass den Bot eine Nachricht senden")
+@app_commands.describe(
+    text="Der Text, den du senden möchtest",
+    channel="Der Channel, in den du die Nachricht senden möchtest"
 )
-
-
-@bot.event
-async def on_ready():
-    print(f"{bot.user} ist online")
-
-
-@bot.slash_command(description="Grüße einen User")
-async def greet(ctx, user: Option(discord.User, "Der User, den du grüßen möchtest")):
-    await ctx.respond(f"Hallo {user.mention}")
-
-
-@bot.slash_command(description="Lass den Bot eine Nachricht senden")
-async def say(
-        ctx,
-        text: Option(str, "Der Text, den du senden möchtest"),
-        channel: Option(discord.TextChannel, "Der Channel, in den du die Nachricht senden möchtest")
-):
+async def say(ctx, text: str, channel: discord.TextChannel):
     await channel.send(text)
-    await ctx.respond("Nachricht gesendet", ephemeral=True)
+    await ctx.response.send_message("Nachricht gesendet", ephemeral=True)
 
 
 bot.run("")  # hier bot token einfügen

@@ -1,36 +1,36 @@
-import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command
 
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        bot.tree.on_error = self.on_app_command_error
+        bot.tree.interaction_check = self.bot_check
 
-    @staticmethod
-    async def bot_check(ctx):
-        if ctx.author.id != 123456789:  # hier user ID einfügen
-            await ctx.respond("Du bist nicht würdig genug, um diesen Befehl zu nutzen!")
+    async def bot_check(self, interaction):
+        if interaction.user.id != 123456789:  # hier user ID einfügen
+            await interaction.response.send_message(
+                "Du bist nicht würdig genug, um diesen Befehl zu nutzen!")
             return False
         return True
 
-    @staticmethod
-    async def cog_check(ctx):
-        if ctx.author.voice is None:
-            await ctx.respond("Tritt erst einem Voice Channel bei.")
+    async def interaction_check(self, interaction):  # Cog check
+        if interaction.user.voice is None:
+            await interaction.response.send_message("Tritt erst einem Voice Channel bei.")
             return False
         return True
 
-    @slash_command()
+    @app_commands.command()
     async def hey(self, ctx):
-        await ctx.respond("Hey")
+        await ctx.response.send_message("Hey")
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx, error):
-        if isinstance(error, discord.CheckFailure):
+    async def on_app_command_error(self, interaction, error):
+        if isinstance(error, app_commands.CheckFailure):
             return
         raise error
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

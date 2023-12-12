@@ -1,14 +1,14 @@
 import discord
 from discord.ext import commands
-from discord.commands import slash_command, Option
+from discord import app_commands
 
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
-    async def embed(self, ctx, hexcode: Option(str)):
+    @app_commands.command()
+    async def embed(self, ctx, hexcode: str):
         hex_string = f"0x{hexcode}"
         color = int(hex_string, 16)
 
@@ -17,9 +17,9 @@ class Base(commands.Cog):
                         "\n\n🔹 Kekse sind lecker",
             color=color
         )
-        embed.set_thumbnail(url=ctx.author.display_avatar)
-        await ctx.respond(embed=embed)
+        embed.set_thumbnail(url=ctx.user.display_avatar)
+        await ctx.response.send_message(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

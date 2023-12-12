@@ -1,20 +1,21 @@
 import discord
 from discord.ext import commands
-from discord.commands import message_command, user_command
+from discord.app_commands import ContextMenu
 
 
 class Context(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @message_command(name="Zeige die ID")
-    async def get_id(self, ctx, message):
-        await ctx.respond(f"Hier ist die Message ID: {message.id}")
+        self.bot.tree.add_command(ContextMenu(name='Zeige die ID', callback=self.get_id))
+        self.bot.tree.add_command(ContextMenu(name='Stups', callback=self.stups))
 
-    @user_command()
+    async def get_id(self, ctx, message: discord.Message):
+        await ctx.response.send_message(f"Hier ist die Message ID: {message.id}")
+
     async def stups(self, ctx, member: discord.Member):
-        await ctx.respond(f"{ctx.author.mention} hat {member.mention} angestupst!")
+        await ctx.response.send_message(f"{ctx.user.mention} hat {member.mention} angestupst!")
 
 
-def setup(bot):
-    bot.add_cog(Context(bot))
+async def setup(bot):
+    await bot.add_cog(Context(bot))

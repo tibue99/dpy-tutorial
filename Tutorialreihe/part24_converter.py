@@ -1,40 +1,38 @@
 import discord
-from discord.commands import slash_command, option
+from discord import app_commands
 from discord.ext import commands
-from discord.ext.commands import ColorConverter, EmojiConverter
+from discord.ext.commands import ColorConverter
+
+
+class ColorTransformer(app_commands.Transformer):
+    async def transform(self, interaction: discord.Interaction, value: str) -> discord.Color:
+        return await ColorConverter().convert(interaction, value)
 
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
-    @option("color", type=ColorConverter)
-    async def converter(self, ctx: discord.ApplicationContext, color: discord.Color):
+    @app_commands.command()
+    async def converter(self, ctx, color: app_commands.Transform[discord.Color, ColorTransformer]):
         embed = discord.Embed(
             title="Titel",
             color=color
         )
-        await ctx.respond(embed=embed, ephemeral=True)
+        await ctx.response.send_message(embed=embed, ephemeral=True)
 
-    @slash_command()
-    @option("emoji", type=EmojiConverter)
-    async def emoji(self, ctx: discord.ApplicationContext, emoji: discord.Emoji):
-        embed = discord.Embed(
-            title=f"Titel {emoji}",
-        )
-        await ctx.respond(embed=embed, ephemeral=True)
-
-    @commands.Cog.listener()
-    async def on_application_command_error(self, ctx, error):
-        if isinstance(error, commands.BadColorArgument):
-            await ctx.respond("Du hast eine ungültige Farbe gewählt.", ephemeral=True)
+    @converter.error
+    async def color_error(self, ctx, error):
+        if isinstance(error, app_commands.TransformerError):
+            await ctx.response.send_message("Du hast eine ungültige Farbe gewählt", ephemeral=True)
             return
-        if isinstance(error, commands.EmojiNotFound):
-            await ctx.respond("Du hast ein ungültiges Emoji gewählt.", ephemeral=True)
+        raise error
+
+    async def on_app_command_error(self, interaction, error):
+        if isinstance(error, app_commands.TransformerError):
             return
         raise error
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

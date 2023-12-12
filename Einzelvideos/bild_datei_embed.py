@@ -1,13 +1,13 @@
 import discord
 from discord.ext import commands
-from discord.commands import slash_command
+from discord import app_commands
 
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
+    @app_commands.command()
     async def bild(self, ctx):
         embed = discord.Embed(
             title="Lecker",
@@ -15,8 +15,8 @@ class Base(commands.Cog):
         )
         file = discord.File(f"cookie.png", filename="image.png")
         embed.set_image(url="attachment://image.png")
-        await ctx.respond(embed=embed, file=file)
+        await ctx.response.send_message(embed=embed, file=file)
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

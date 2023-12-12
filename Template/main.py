@@ -1,24 +1,26 @@
+import asyncio
+
 import discord
-import os
-from dotenv import load_dotenv
-
-intents = discord.Intents.default()
-
-bot = discord.Bot(
-    intents=intents,
-    debug_guilds=[123456789]  # hier server id einfügen
-)
+import ezcord
 
 
-@bot.event
-async def on_ready():
-    print(f"{bot.user} ist online")
+class TutorialBot(ezcord.Bot):
+    def __init__(self):
+        super().__init__(intents=discord.Intents.default())
+
+    async def setup_hook(self):
+        await super().setup_hook()
+        await self.tree.sync()
+
+    async def on_ready(self):
+        print(f"{self.user} ist online")
+
+
+async def main():
+    async with TutorialBot() as bot:
+        bot.load_cogs("cogs")  # Load all cogs in the "cogs" folder
+        await bot.start("TOKEN")
 
 
 if __name__ == "__main__":
-    for filename in os.listdir("cogs"):
-        if filename.endswith(".py"):
-            bot.load_extension(f"cogs.{filename[:-3]}")
-
-    load_dotenv()
-    bot.run(os.getenv("TOKEN"))
+    asyncio.run(main())

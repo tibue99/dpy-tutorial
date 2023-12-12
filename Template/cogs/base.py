@@ -1,16 +1,16 @@
 import discord
 from discord.ext import commands
-from discord.commands import slash_command
+from discord import app_commands
 
 
 class Base(commands.Cog):
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @slash_command(description="hello")
-    async def hello(self, ctx: discord.ApplicationContext):
-        await ctx.respond(f"Hey {ctx.author.mention}")
+    @app_commands.command(description="hello")
+    async def hello(self, ctx: discord.Interaction):
+        await ctx.response.send_message(f"Hey {ctx.user.mention}")
 
 
-def setup(bot: discord.Bot):
-    bot.add_cog(Base(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Base(bot))

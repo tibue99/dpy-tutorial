@@ -1,6 +1,6 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command
 
 
 options = [
@@ -20,11 +20,11 @@ class Dropdown(commands.Cog):
     async def on_ready(self):
         self.bot.add_view(TutorialView())
 
-    @slash_command()
+    @app_commands.command()
     async def select1(self, ctx):
-        await ctx.respond("Wähle Programmiersprachen aus", view=TutorialView())
+        await ctx.response.send_message("Wähle Programmiersprachen aus", view=TutorialView())
 
-    @slash_command()
+    @app_commands.command()
     async def select2(self, ctx):
         select = TutorialSelect()
         select.append_option(keks)
@@ -32,11 +32,11 @@ class Dropdown(commands.Cog):
         view = discord.ui.View(timeout=None)
         view.add_item(select)
 
-        await ctx.respond(view=view)
+        await ctx.response.send_message(view=view)
 
 
-def setup(bot):
-    bot.add_cog(Dropdown(bot))
+async def setup(bot):
+    await bot.add_cog(Dropdown(bot))
 
 
 class TutorialSelect(discord.ui.Select):
@@ -63,7 +63,7 @@ class TutorialView(discord.ui.View):
         options=options,
         custom_id="keks"
     )
-    async def select_callback(self, select, interaction):
+    async def select_callback(self, interaction, select):
         if "Python" in select.values:
             labels = [option.label for option in select.options]
             if "Keks" not in labels:

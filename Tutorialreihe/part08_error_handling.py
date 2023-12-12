@@ -1,26 +1,28 @@
 import discord
 from discord.ext import commands
-from discord.commands import slash_command, Option
+from discord import app_commands
 
 
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        bot.tree.on_error = self.on_app_command_error
 
-    @slash_command(description="Kicke einen Member")
-    async def kick(self, ctx, member: Option(discord.Member, "Wähle einen Member")):
+    @app_commands.command(description="Kickt einen Member")
+    @app_commands.describe(member="Wähle einen Member")
+    async def kick(self, ctx, member: discord.Member):
         try:
             await member.kick()
         except discord.Forbidden:
-            await ctx.respond("Ich habe keine Berechtigung, um diesen Member zu kicken")
+            await ctx.response.send_message(
+                "Ich habe keine Berechtigung, um diesen Member zu kicken"
+            )
             return
-        await ctx.respond(f"{member.mention} wurde gekickt!")
+        await ctx.response.send_message(f"{member.mention} wurde gekickt!")
 
-    @commands.Cog.listener()
-    async def on_application_command_error(self, ctx, error):
-        await ctx.respond(f"Es ist ein Fehler aufgetreten: ```{error}```")
-        raise error
+    async def on_app_command_error(self, ctx, error):
+        await ctx.response.send_message(f"Es ist ein Fehler aufgetreten: ```{error}```")
 
 
-def setup(bot):
-    bot.add_cog(Admin(bot))
+async def setup(bot):
+    await bot.add_cog(Admin(bot))
