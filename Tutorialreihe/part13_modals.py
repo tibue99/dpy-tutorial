@@ -1,46 +1,41 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command
 
 
 class ModalCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
+    @app_commands.command()
     async def modal(self, ctx):
-        modal = TutorialModal(title="Erstelle ein Embed")
-        await ctx.send_modal(modal)
+        modal = TutorialModal()
+        await ctx.response.send_modal(modal)
 
-    @slash_command()
+    @app_commands.command()
     async def button_modal(self, ctx):
-        await ctx.respond("Hey", view=TutorialView())
+        await ctx.response.send_message("Hey", view=TutorialView())
 
 
-def setup(bot):
-    bot.add_cog(ModalCog(bot))
+async def setup(bot):
+    await bot.add_cog(ModalCog(bot))
 
 
-class TutorialModal(discord.ui.Modal):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            discord.ui.InputText(
-                label="Embed Titel",
-                placeholder="Placeholder"
-            ),
-            discord.ui.InputText(
-                label="Embed Beschreibung",
-                placeholder="Placeholder",
-                style=discord.InputTextStyle.long
-            ),
-            *args,
-            **kwargs
-        )
+class TutorialModal(discord.ui.Modal, title="Erstelle ein Embed"):
+    embed_title = discord.ui.TextInput(
+        label="Embed Titel",
+        placeholder="Placeholder"
+    )
+    embed_description = discord.ui.TextInput(
+        label="Embed Beschreibung",
+        placeholder="Placeholder",
+        style=discord.TextStyle.long
+    )
 
-    async def callback(self, interaction):
+    async def on_submit(self, interaction):
         embed = discord.Embed(
-            title=self.children[0].value,
-            description=self.children[1].value,
+            title=self.embed_title.value,
+            description=self.embed_description.value,
             color=discord.Color.green()
         )
         await interaction.response.send_message(embed=embed)
@@ -48,5 +43,5 @@ class TutorialModal(discord.ui.Modal):
 
 class TutorialView(discord.ui.View):
     @discord.ui.button(label="Klicke hier")
-    async def button_callback(self, button, interaction):
-        await interaction.response.send_modal(TutorialModal(title="Erstelle ein Embed"))
+    async def button_callback(self, interaction, button):
+        await interaction.response.send_modal(TutorialModal())

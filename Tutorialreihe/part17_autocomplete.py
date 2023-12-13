@@ -1,28 +1,31 @@
 import discord
-from discord.utils import basic_autocomplete
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command, Option
 
-food = ["Pizza", "Pommes", "Döner"]
+foods = ["Pizza", "Pommes", "Döner"]
 
 
-def get_food(ctx: discord.AutocompleteContext):
-    if "99" in ctx.interaction.user.display_name:
-        return food + ["Kekse"]
+async def get_food(interaction: discord.Interaction, current: str):
+    choices = [
+        app_commands.Choice(name=food, value=food)
+        for food in foods if current.lower() in food.lower()
+    ]
 
-    return food
+    if "99" in interaction.user.display_name:
+        return choices + [app_commands.Choice(name="Kekse", value="Kekse")]
+
+    return choices
 
 
 class Base(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command()
-    async def essen(
-            self, ctx, auswahl: Option(str, autocomplete=basic_autocomplete(get_food))
-    ):
-        await ctx.respond(f"Du hast ✨ **{auswahl}** ✨ gewählt")
+    @app_commands.command()
+    @app_commands.autocomplete(auswahl=get_food)
+    async def essen(self, ctx, auswahl: str):
+        await ctx.response.send_message(f"Du hast ✨ **{auswahl}** ✨ gewählt")
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

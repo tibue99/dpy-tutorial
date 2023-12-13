@@ -23,5 +23,5 @@ class Base(commands.Cog):
                     break
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

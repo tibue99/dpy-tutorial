@@ -1,37 +1,45 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command, Option
 
 
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        bot.tree.on_error = self.on_app_command_error
 
-    @slash_command(description="Kicke einen Member")
-    @discord.default_permissions(administrator=True, kick_members=True)
-    @discord.guild_only()
-    async def kick(self, ctx, member: Option(discord.Member, "Wähle einen Member")):
+    @app_commands.command(description="Kicke einen Member")
+    @app_commands.default_permissions(administrator=True, kick_members=True)
+    @app_commands.guild_only()
+    @app_commands.describe(member="Wähle einen Member")
+    async def kick(self, interaction, member: discord.Member):
         try:
             await member.kick()
         except discord.Forbidden:
-            await ctx.respond("Ich habe keine Berechtigung, um diesen Member zu kicken", ephemeral=True)
+            await interaction.response.send_message(
+                "Ich habe keine Berechtigung, um diesen Member zu kicken", ephemeral=True
+            )
             return
-        await ctx.respond(f"{member.mention} wurde gekickt!")
+        await interaction.response.send_message(f"{member.mention} wurde gekickt!")
 
-    @slash_command()
-    @commands.has_permissions(administrator=True)
-    async def hallo(self, ctx):
-        await ctx.respond("Hey")
+    @app_commands.command()
+    @app_commands.checks.has_permissions(administrator=True)
+    async def hallo(self, interaction):
+        await interaction.response.send_message("Hey")
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            await ctx.respond(f"Nur Admins dürfen diesen Befehl ausführen!", ephemeral=True)
+    async def on_app_command_error(self, ctx, error):
+        if isinstance(error, app_commands.CheckFailure):
+            await ctx.response.send_message(
+                f"Nur Admins dürfen diesen Befehl ausführen!", ephemeral=True
+            )
             return
 
-        await ctx.respond(f"Es ist ein Fehler aufgetreten: ```{error}```", ephemeral=True)
+        await ctx.response.send_message(
+            f"Es ist ein Fehler aufgetreten: ```{error}```", ephemeral=True
+        )
         raise error
 
 
-def setup(bot):
-    bot.add_cog(Admin(bot))
+async def setup(bot):
+    await bot.add_cog(Admin(bot))

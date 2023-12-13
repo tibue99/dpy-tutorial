@@ -1,6 +1,6 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
-from discord.commands import slash_command
 
 
 class Base(commands.Cog):
@@ -21,30 +21,27 @@ class Base(commands.Cog):
             print("Keine Rechte")
             return
 
-        # Variante 3
-        channel = await discord.utils.get_or_fetch(self.bot, "channel", channel_id, default=None)
-
         if channel is not None:
             await channel.send("Kekse sind lecker!")
         else:
             print("Channel wurde nicht gefunden :(")
 
-    @slash_command()
+    @app_commands.command()
     async def say(self, ctx):
         channel_id = 123456789  # Hier Channel ID einfügen
 
-        # Variante 4
-        channel = ctx.guild.get_channel(channel_id)  # Geht auch mit fetch
+        # Variante 3 (Geht auch mit fetch)
+        channel = ctx.guild.get_channel(channel_id)
 
-        # Variante 5
-        channel = discord.utils.get(ctx.guild.text_channels, id=channel_id)  # Geht auch mit dem Namen des Channels
+        # Variante 4 (Geht auch mit dem Namen des Channels)
+        channel = discord.utils.get(ctx.guild.text_channels, id=channel_id)
 
         if channel is not None:
             await channel.send("Kekse sind schmackhaft!")
-            await ctx.respond("Nachricht gesendet.")
+            await ctx.response.send_message("Nachricht gesendet.")
         else:
-            await ctx.respond("Channel wurde nicht gefunden :(")
+            await ctx.response.send_message("Channel wurde nicht gefunden :(")
 
 
-def setup(bot):
-    bot.add_cog(Base(bot))
+async def setup(bot):
+    await bot.add_cog(Base(bot))

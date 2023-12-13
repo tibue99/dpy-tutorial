@@ -1,5 +1,6 @@
+from datetime import datetime, time, timezone
+
 from discord.ext import commands, tasks
-from datetime import time, timezone
 
 
 class Task(commands.Cog):
@@ -25,6 +26,12 @@ class Task(commands.Cog):
     async def time_task(self):
         print("Es ist 22:00 Uhr UTC")
 
+    @tasks.loop(
+        time=time(0, 0, tzinfo=datetime.now().astimezone().tzinfo)  # Zeitzone des Bots
+    )
+    async def time_task(self):
+        print("Es ist Mitternacht")
 
-def setup(bot):
-    bot.add_cog(Task(bot))
+
+async def setup(bot):
+    await bot.add_cog(Task(bot))
